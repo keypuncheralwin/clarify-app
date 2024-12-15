@@ -29,6 +29,12 @@ target 'Clarify' do
     # Pods for testing
   end
 
+  # Add Share Extension target
+  target 'CustomShare' do
+    inherit! :search_paths
+    pod 'KeychainAccess' # Add KeychainAccess for Share Extension
+  end
+
   pod 'FirebaseCore', :modular_headers => true
   pod 'FirebaseCoreInternal', :modular_headers => true
   pod 'FirebaseSessions', :modular_headers => true

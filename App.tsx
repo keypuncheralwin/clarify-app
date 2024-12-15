@@ -7,17 +7,35 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import * as Keychain from 'react-native-keychain';
 
 function App(): React.JSX.Element {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('alwingeorge11@gmail.com');
+  const [password, setPassword] = useState('password');
 
   const handleSignUp = async () => {
     try {
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-      Alert.alert('Success', 'User registered successfully!');
-      console.log('User registered: ', userCredential.user);
+      const userCredential:FirebaseAuthTypes.UserCredential = await auth().createUserWithEmailAndPassword(email, password);
+
+      // Extract the required values
+      const uid = userCredential.user.uid;
+      const userData = userCredential.user.toJSON() as any;
+      const refreshToken = userData.refreshToken;
+
+
+      // Store uuid and refreshToken in the shared Keychain
+      await Keychain.setGenericPassword(
+        'auth', // A single key for grouping
+        JSON.stringify({ uid, refreshToken}), // Store as JSON
+        {
+          service: '79T4XQDYMY.io.clarifyapp', // Shared keychain identifier
+          accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
+        },
+      );
+
+      Alert.alert('Success', 'User registered and credentials stored securely!');
+      console.log('User registered: ', JSON.stringify({ uid, refreshToken }));
     } catch (error: any) {
       let errorMessage = 'Something went wrong. Please try again.';
       if (error.code === 'auth/email-already-in-use') {
