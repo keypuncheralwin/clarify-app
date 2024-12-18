@@ -7,7 +7,7 @@ export interface AppSettingsState {
 
 const initialState: AppSettingsState = {
   isFreshInstall: true,
-  isDarkMode: false,
+  isDarkMode: true,
 };
 
 const appSettingsSlice = createSlice({

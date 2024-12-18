@@ -1,7 +1,12 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTheme, Button } from 'react-native-paper';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootStack';
+import { RootState } from '../store/configureStore';
+import { toggleDarkMode } from '../store/appSettingsSlice';
+import CustomSwitch from '../theme/components';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -10,16 +15,36 @@ type Props = {
 };
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const isDarkMode = useSelector((state: RootState) => state.appSettings.isDarkMode);
+  const { colors } = useTheme(); // Get the current theme colors
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Home Screen!</Text>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Text style={[styles.title, { color: colors.primary }]}>
+        Welcome to the Home Screen!
+      </Text>
+
+      {/* Dark Mode Toggle */}
+      <View style={styles.switchContainer}>
+        <Text style={[styles.label, { color: colors.primary }]}>Dark Mode</Text>
+        <CustomSwitch
+          value={isDarkMode}
+          onValueChange={() => {
+            dispatch(toggleDarkMode());
+            return;
+          }}
+        />
+      </View>
 
       {/* Navigation Button */}
       <Button
-        title="Go to Details"
+        mode="contained"
         onPress={() => navigation.navigate('Details', { itemId: 42 })}
-      />
+        style={styles.button}
+      >
+        Go to Details
+      </Button>
     </View>
   );
 };
@@ -30,23 +55,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#f8f9fa',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
   },
-  counter: {
-    fontSize: 20,
-    fontWeight: '600',
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 16,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '60%',
-    marginBottom: 16,
+  label: {
+    fontSize: 18,
+    marginRight: 8,
+  },
+  button: {
+    marginTop: 16,
   },
 });
 
