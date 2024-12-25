@@ -17,7 +17,7 @@ type Props = {
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useDispatch();
   const isDarkMode = useSelector((state: RootState) => state.appSettings.isDarkMode);
-  const { colors } = useTheme(); // Get the current theme colors
+  const { colors } = useTheme();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
